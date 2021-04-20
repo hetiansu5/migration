@@ -37,7 +37,7 @@ func (m Grammar) CreateIndex(blueprint *schema.Blueprint, action *schema.Action)
 	var sql string
 	if index.GetIndexType() == schema.IndexForeignKey {
 		sql = fmt.Sprintf("ALTER TABLE `%s` ADD %s (`%s`) REFERENCES `%s`(`%s`)", blueprint.GetTable(), getIndexTypeText(index),
-			index.GetColumn(), index.GetForeignTable(), index.GetForeignColumn())
+			index.GetColumn(), index.GetOption("foreign_table"), index.GetOption("foreign_column"))
 	} else {
 		sql = fmt.Sprintf("ALTER TABLE `%s` ADD %s %s(`%s`)", blueprint.GetTable(), getIndexTypeText(index),
 			index.GetName(), strings.Join(index.GetColumns(), "`, `"))

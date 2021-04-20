@@ -8,24 +8,21 @@ const (
 )
 
 type Index struct {
-	indexType uint8    //索引类型
-	columns   []string //索引字段
-	name      string   //索引名称
-	algorithm string   //算法
+	indexType uint8             //索引类型
+	columns   []string          //索引字段
+	options   map[string]string //自定义选项参数
 }
 
 // newIndex create a pointed Index object
-// options[0]: indexName
-// options[1]: algorithm
+// options: key1 value1 key2 value2
 func newIndex(columns []string, indexType uint8, options ...string) *Index {
 	index := &Index{columns: columns, indexType: indexType}
-	if len(options) >= 1 {
-		index.name = options[0]
-		if len(options) >= 2 {
-			index.algorithm = options[1]
-			if len(options) >= 3 {
-				panic("too long options")
+	if len(options) > 0 {
+		for i := 0; i < len(options); i += 2 {
+			if i+1 >= len(options) {
+				break
 			}
+			index.SetOption(options[i], options[i+1])
 		}
 	}
 	return index
@@ -44,17 +41,39 @@ func (i *Index) GetColumns() []string {
 }
 
 func (i *Index) GetName() string {
-	return i.name
+	return i.GetOption("name")
+}
+
+func (i *Index) SetName(value string) {
+	i.SetOption("name", value)
 }
 
 func (i *Index) GetAlgorithm() string {
-	return i.algorithm
+	return i.GetOption("algorithm")
 }
 
-func (i *Index) GetForeignTable() string {
-	return i.name
+func (i *Index) SetAlgorithm(value string) {
+	i.SetOption("algorithm", value)
 }
 
-func (i *Index) GetForeignColumn() string {
-	return i.algorithm
+func (i *Index) GetOptions() map[string]string {
+	return i.options
+}
+
+func (i *Index) GetOption(key string) string {
+	if i.options == nil {
+		return ""
+	}
+	return i.options[key]
+}
+
+func (i *Index) SetOption(key string, value string) {
+	i.checkOptions()
+	i.options[key] = value
+}
+
+func (i *Index) checkOptions() {
+	if i.options == nil {
+		i.options = make(map[string]string)
+	}
 }

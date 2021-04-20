@@ -12,6 +12,7 @@ func main() {
 	dropTable()
 	dropTableIfExists()
 	createIndex()
+	dropIndex()
 	addColumn()
 	renameColumn()
 	changeColumn()
@@ -42,10 +43,17 @@ func dropTableIfExists() {
 
 func createIndex() {
 	statements := schema.TableSQL("users", func(table *schema.Blueprint) {
-		table.Index("uid,pid", "idx_uid", "BTREE")
+		table.Index("uid,pid", "name", "idx_uid", "algorithm", "BTREE")
 		table.Primary("uid")
 		table.Unique("uid")
-		table.ForeignKey("pid", "products", "id")
+		table.ForeignKey("pid", "foreign_table", "products", "foreign_column", "id")
+	})
+	printStatements(statements)
+}
+
+func dropIndex() {
+	statements := schema.TableSQL("users", func(table *schema.Blueprint) {
+		table.DropIndex("idx_uid")
 	})
 	printStatements(statements)
 }

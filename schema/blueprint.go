@@ -104,7 +104,7 @@ func (b *Blueprint) ForeignKey(columns string, options ...string) {
 
 func (b *Blueprint) DropIndex(indexName string) {
 	action := newAction(ActionDropIndex)
-	action.index = newIndex([]string{}, 0, indexName)
+	action.index = newIndex([]string{}, 0, "name", indexName)
 	b.addAction(action)
 }
 

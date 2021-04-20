@@ -10,7 +10,9 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/hetiansu5/migration/grammar/mysql"
+	"github.com/hetiansu5/migration/grammar/mongo"
 	"github.com/hetiansu5/migration/schema"
+	mongodb "go.mongodb.org/mongo-driver/mongo"
 )
 
 func main() {
@@ -32,13 +34,12 @@ func main() {
 	schema.DropIfExists("users")
 
 	// register mongo grammar and db driver for mongo connection
-	schema.Register("mongo", mongo.Grammar{}, mongo.driver)
+	var db2 *mongodb.Database
+	schema.Register("mongo", mongo.Grammar{}, mongo.NewDriver(db2))
 	// generate creating index statements
 	statements := schema.Connection("mongo").TableSQL("users", func(table *schema.Blueprint) {
-		table.Index("uid,pid", "idx_uid", "BTREE")
-		table.Primary("uid")
-		table.Unique("uid")
-		table.ForeignKey("pid", "products", "id")
+		table.Index("uid,pid", "name", "idx_uid_pid")
+		table.Unique("session_id")
 	})
 	fmt.Println(statements)
 }
